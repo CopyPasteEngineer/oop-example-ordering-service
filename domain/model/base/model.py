@@ -3,6 +3,32 @@ from functools import partial
 
 
 class Attribute:
+    def __init__(self, *, default=None, optional=None):
+        self.default = default
+        if optional is False:
+            assert default is None
+            self.optional = False
+            self.default = None
+        elif optional is True:
+            self.optional = True
+            self.default = default
+        elif optional is None:
+            if default is None:
+                self.optional = False
+                self.default = None
+            else:
+                self.optional = True
+                self.default = default
+
+    def get_default(self):
+        assert self.optional
+        return self.default
+
+    def is_optional(self):
+        return self.optional
+
+
+class AttributeSetter:
     pass
 
 
@@ -63,14 +89,14 @@ def deserialize_value(value):
     return value
 
 
-class AutoSerializerMixin:
+class AutoSerializer(metaclass=AutoSerializerMeta):
     _attrs: Dict[str, Attribute]
     _values: Dict[str, Any]
 
     def __init__(self, **kwargs):
         values = set()
 
-        attrs = getattr(self, '__attrs')
+        attrs: Dict[str, Attribute] = getattr(self, '__attrs')
         for name, value in kwargs.items():
             attr = attrs.get(name)
             if not attr:
@@ -82,8 +108,13 @@ class AutoSerializerMixin:
 
         k_set = set(attrs.keys())
         if values != k_set:
-            requires = k_set - values
-            raise AttributeError(f'Attribute {requires} required')
+            unassigned = k_set - values
+            for name in unassigned:
+                attr = attrs[name]
+                if attr.is_optional():
+                    setattr(self, f'_{name}', attr.get_default())
+                else:
+                    raise AttributeError(f'Attribute {name} required')
 
     def serialize(self):
         return {name: serialize_value(getattr(self, name)) for name in getattr(self, '__attrs').keys()}
