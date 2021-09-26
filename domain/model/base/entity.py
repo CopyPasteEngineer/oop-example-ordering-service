@@ -1,12 +1,5 @@
-from abc import ABC
-
-from .serializable import Serializable
-from .auto_serializer import AutoSerializerMixin, AutoSerializerMeta
+from .model import Model
 
 
-class Entity(Serializable, ABC):
+class Entity(Model):
     pass
-
-
-# class EntityAuto(AutoSerializerMixin, metaclass=AutoSerializerMeta):
-#     pass

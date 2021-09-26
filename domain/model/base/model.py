@@ -51,7 +51,7 @@ def setter(self, value, name, type_):
     return setattr(self, name, value)
 
 
-class AutoSerializerMeta(type):
+class ModelMeta(type):
     def __new__(mcs, class_name, bases, dct: Dict):
         annotations: Dict[str, type] = dct.get('__annotations__', {})
         attrs = {}
@@ -89,7 +89,7 @@ def deserialize_value(value):
     return value
 
 
-class AutoSerializer(metaclass=AutoSerializerMeta):
+class Model(metaclass=ModelMeta):
     _attrs: Dict[str, Attribute]
     _values: Dict[str, Any]
 

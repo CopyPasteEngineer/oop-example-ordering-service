@@ -1,33 +1,19 @@
-from typing import Dict
+from typing import Dict, TYPE_CHECKING
 
 from domain.model.base import Entity
+from domain.model.base.model import Attribute, AttributeSetter
 
 from .product_id import ProductId
 from .price_thb import PriceThb
 
 
 class Product(Entity):
-    def __init__(self, product_id: ProductId, price: PriceThb):
-        self._product_id: ProductId = ProductId(product_id)
-        self._price: PriceThb = PriceThb(price)
+    product_id: ProductId = Attribute()
+    price: PriceThb = Attribute()
 
-    @property
-    def product_id(self) -> ProductId:
-        return self._product_id
+    if TYPE_CHECKING:
+        def __init__(self, product_id: ProductId, price: PriceThb):
+            super().__init__()
 
-    @property
-    def price(self) -> PriceThb:
-        return self._price
-
-    def serialize(self) -> Dict:
-        return {
-            'product_id': self._product_id.serialize(),
-            'price': self._price.serialize(),
-        }
-
-    @classmethod
-    def deserialize(cls, value: Dict) -> 'Product':
-        product_id = ProductId.deserialize(value['product_id'])
-        price = PriceThb.deserialize(value['price'])
-
-        return Product(product_id=product_id, price=price)
+    _product_id: ProductId = AttributeSetter()
+    _price: PriceThb = AttributeSetter()

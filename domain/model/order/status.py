@@ -17,7 +17,7 @@ class OrderStatusEnum(str, Enum):
 class OrderStatus(PrimitiveValueObject[str]):
     Enum = OrderStatusEnum
 
-    def __init__(self, status: Union[str, 'OrderStatus']):
+    def __init__(self, status: Union[str, 'OrderStatus']) -> object:
         value: str = self._validate(status)
         super().__init__(value)
 
