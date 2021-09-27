@@ -17,7 +17,7 @@ class ValueObjectList(Generic[ValueType]):
     def value_type(self) -> ValueType:
         pass
 
-    def __init__(self, values: List[ValueType]):
+    def __init__(self: ValueObjectListType, values: Union[List[ValueType], ValueObjectListType]):
         values = self._validate(values)
         self._values: List[ValueType] = values
 
