@@ -1,4 +1,5 @@
 from domain.model.registry import DomainRegistry
+from domain.model.base import optimistic_lock
 
 from domain.model.maps import Address
 
@@ -24,7 +25,7 @@ class OrderService:
         order = Order(order_id=order_id, buyer_id=buyer_id, lines=lines,
                       product_cost=total_product_cost, delivery_cost=delivery_cost,
                       payment_id=payment_id)
-        await self.registry.order_repository.save(order)
+        await self._save_new_order(order)
 
         event = OrderCreated(order_id=order_id, buyer_id=buyer_id, lines=lines,
                              product_cost=total_product_cost, delivery_cost=delivery_cost,
@@ -32,3 +33,7 @@ class OrderService:
         self.registry.event_publisher.publish(event)
 
         return order.order_id
+
+    @optimistic_lock
+    async def _save_new_order(self, order: Order):
+        return await self.registry.order_repository.save(order)

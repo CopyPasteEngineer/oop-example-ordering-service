@@ -1,6 +1,9 @@
 from typing import TypeVar, Generic
 from abc import abstractmethod
 
+from asyncio import sleep
+from functools import wraps
+
 from .str_id import StrIdValueObject
 from .entity import Entity
 
@@ -28,3 +31,15 @@ class RepositoryAbstract(Generic[IdType, EntityType]):
     @abstractmethod
     async def save(self, entity: EntityType):
         pass
+
+
+def optimistic_lock(func):
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        while True:
+            try:
+                return await func(*args, **kwargs)
+            except EntityOutdated:
+                await sleep(0.1)
+
+    return wrapper
