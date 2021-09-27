@@ -1,15 +1,17 @@
-from typing import Dict
 from abc import ABC, abstractmethod
 
+from .model import Model
 
-class DomainEvent(ABC):
+
+class DomainEvent(Model):
     @classmethod
     def event_name(cls):
         return cls.__name__
 
-    @abstractmethod
-    def serialize(self) -> Dict:
-        pass
+    def __eq__(self, other: 'DomainEvent'):
+        if type(self) is not type(other):
+            return False
+        return self.serialize() == other.serialize()
 
 
 class DomainEventPublisher(ABC):

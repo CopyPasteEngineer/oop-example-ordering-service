@@ -1,4 +1,7 @@
+from typing import TYPE_CHECKING
+
 from domain.model.base.event import DomainEvent
+from domain.model.base.model import Attribute
 from domain.model.maps import Address
 from domain.model.product import PriceThb
 from domain.model.payment import PaymentId
@@ -9,65 +12,43 @@ from .line import OrderLineList
 
 
 class OrderCreated(DomainEvent):
-    def __init__(self, order_id: OrderId, buyer_id: BuyerId, lines: OrderLineList,
-                 product_cost: PriceThb, delivery_cost: PriceThb, payment_id: PaymentId, destination: Address):
-        self._order_id: OrderId = OrderId(order_id)
-        self._buyer_id: BuyerId = BuyerId(buyer_id)
-        self._lines: OrderLineList = OrderLineList(lines)
-        self._product_cost: PriceThb = PriceThb(product_cost)
-        self._delivery_cost: PriceThb = PriceThb(delivery_cost)
-        self._payment_id: PaymentId = PaymentId(payment_id)
-        self._destination: Address = destination
+    order_id: OrderId = Attribute()
+    buyer_id: BuyerId = Attribute()
+    lines: OrderLineList = Attribute()
+    product_cost: PriceThb = Attribute()
+    delivery_cost: PriceThb = Attribute()
+    payment_id: PaymentId = Attribute()
+    destination: Address = Attribute()
 
-    def serialize(self):
-        return {
-            'order_id':  self._order_id.serialize(),
-            'buyer_id':  self._buyer_id.serialize(),
-            'lines':  self._lines.serialize(),
-            'product_cost':  self._product_cost.serialize(),
-            'delivery_cost':  self._delivery_cost.serialize(),
-            'payment_id':  self._payment_id.serialize(),
-            'destination':  self._destination.serialize(),
-        }
+    if TYPE_CHECKING:
+        def __init__(self, order_id: OrderId, buyer_id: BuyerId, lines: OrderLineList,
+                     product_cost: PriceThb, delivery_cost: PriceThb, payment_id: PaymentId, destination: Address):
+            super().__init__()
 
 
 class OrderPaid(DomainEvent):
-    def __init__(self, order_id: OrderId, buyer_id: BuyerId, lines: OrderLineList,
-                 product_cost: PriceThb, delivery_cost: PriceThb, payment_id: PaymentId):
-        self._order_id: OrderId = OrderId(order_id)
-        self._buyer_id: BuyerId = BuyerId(buyer_id)
-        self._lines: OrderLineList = OrderLineList(lines)
-        self._product_cost: PriceThb = PriceThb(product_cost)
-        self._delivery_cost: PriceThb = PriceThb(delivery_cost)
-        self._payment_id: PaymentId = PaymentId(payment_id)
+    order_id: OrderId = Attribute()
+    buyer_id: BuyerId = Attribute()
+    lines: OrderLineList = Attribute()
+    product_cost: PriceThb = Attribute()
+    delivery_cost: PriceThb = Attribute()
+    payment_id: PaymentId = Attribute()
 
-    def serialize(self):
-        return {
-            'order_id':  self._order_id.serialize(),
-            'buyer_id':  self._buyer_id.serialize(),
-            'lines':  self._lines.serialize(),
-            'product_cost':  self._product_cost.serialize(),
-            'delivery_cost':  self._delivery_cost.serialize(),
-            'payment_id':  self._payment_id.serialize(),
-        }
+    if TYPE_CHECKING:
+        def __init__(self, *, order_id: OrderId, buyer_id: BuyerId, lines: OrderLineList,
+                     product_cost: PriceThb, delivery_cost: PriceThb, payment_id: PaymentId):
+            super().__init__()
 
 
 class OrderCancelled(DomainEvent):
-    def __init__(self, order_id: OrderId, buyer_id: BuyerId, lines: OrderLineList,
-                 product_cost: PriceThb, delivery_cost: PriceThb, payment_id: PaymentId):
-        self._order_id: OrderId = OrderId(order_id)
-        self._buyer_id: BuyerId = BuyerId(buyer_id)
-        self._lines: OrderLineList = OrderLineList(lines)
-        self._product_cost: PriceThb = PriceThb(product_cost)
-        self._delivery_cost: PriceThb = PriceThb(delivery_cost)
-        self._payment_id: PaymentId = PaymentId(payment_id)
+    order_id: OrderId = Attribute()
+    buyer_id: BuyerId = Attribute()
+    lines: OrderLineList = Attribute()
+    product_cost: PriceThb = Attribute()
+    delivery_cost: PriceThb = Attribute()
+    payment_id: PaymentId = Attribute()
 
-    def serialize(self):
-        return {
-            'order_id':  self._order_id.serialize(),
-            'buyer_id':  self._buyer_id.serialize(),
-            'lines':  self._lines.serialize(),
-            'product_cost':  self._product_cost.serialize(),
-            'delivery_cost':  self._delivery_cost.serialize(),
-            'payment_id':  self._payment_id.serialize(),
-        }
+    if TYPE_CHECKING:
+        def __init__(self, *, order_id: OrderId, buyer_id: BuyerId, lines: OrderLineList,
+                     product_cost: PriceThb, delivery_cost: PriceThb, payment_id: PaymentId):
+            super().__init__()

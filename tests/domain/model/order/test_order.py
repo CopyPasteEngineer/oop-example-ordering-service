@@ -1,5 +1,8 @@
 import pytest
-from domain.model.order import Order, OrderId, BuyerId, OrderLineList, OrderStatus, OrderLine, OrderAmount
+from domain.model.order import (
+    Order, OrderId, BuyerId, OrderLineList, OrderStatus, OrderLine, OrderAmount,
+    OrderAlreadyCancelledException, OrderAlreadyPaidException,
+)
 from domain.model.order.event import OrderPaid, OrderCancelled
 from domain.model.product import PriceThb, ProductId
 from domain.model.payment import PaymentId
@@ -102,4 +105,27 @@ def test_pay_when_waiting(domain_registry, event_publisher):
     order.pay()
     assert order.is_paid()
 
-    assert len(event_publisher.events) == 1 and isinstance(event_publisher.events[0], OrderPaid)  # TODO: test fields
+    expected_event = OrderPaid(order_id=order.order_id, buyer_id=order.buyer_id, lines=order.lines,
+                               product_cost=order.product_cost, delivery_cost=order.delivery_cost,
+                               payment_id=order.payment_id)
+    assert len(event_publisher.events) == 1 and event_publisher.events[0] == expected_event
+
+
+def test_pay_when_cancelled():
+    order = build_dummy_order(status='cancelled')
+
+    assert order.is_cancelled()
+
+    with pytest.raises(OrderAlreadyCancelledException):
+        order.pay()
+    assert order.is_cancelled()
+
+
+def test_pay_when_paid():
+    order = build_dummy_order(status='paid')
+
+    assert order.is_paid()
+
+    with pytest.raises(OrderAlreadyPaidException):
+        order.pay()
+    assert order.is_paid()
