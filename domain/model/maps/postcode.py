@@ -1,24 +1,21 @@
 import re
-from typing import Union
+from typing import Union, TYPE_CHECKING
 
 from domain.model.base import PrimitiveValueObject
 
 
 class Postcode(PrimitiveValueObject[str]):
-    def __init__(self, postcode: Union[str, 'Postcode']):
-        value: str = self._validate(postcode)
-        super().__init__(value)
+    value_type = str
 
-    @staticmethod
-    def _validate(postcode):
-        if isinstance(postcode, str):
-            value = postcode
-        elif isinstance(postcode, Postcode):
-            value = postcode._value
-        else:
-            raise TypeError(f'Expect value of type (str, Postcode), got {type(postcode)}')
+    @classmethod
+    def _validate(cls, value):
+        value = super()._validate(value)
 
         if not re.match(r'^\d{5}$', value):
             raise ValueError(f'Postcode must be a string of 5 digits, got {value}')
 
         return value
+
+    if TYPE_CHECKING:
+        def __init__(self, postcode: Union[str, 'Postcode']):
+            super().__init__(...)

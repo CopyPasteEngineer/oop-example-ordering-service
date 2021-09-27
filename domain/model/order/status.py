@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, TYPE_CHECKING
 from enum import Enum
 
 from domain.model.base import PrimitiveValueObject
@@ -15,11 +15,8 @@ class OrderStatusEnum(str, Enum):
 
 
 class OrderStatus(PrimitiveValueObject[str]):
+    value_type = str
     Enum = OrderStatusEnum
-
-    def __init__(self, status: Union[str, 'OrderStatus']) -> object:
-        value: str = self._validate(status)
-        super().__init__(value)
 
     def is_waiting(self) -> bool:
         return self._value == OrderStatusEnum.WAITING
@@ -30,17 +27,17 @@ class OrderStatus(PrimitiveValueObject[str]):
     def is_cancelled(self) -> bool:
         return self._value == OrderStatusEnum.CANCELLED
 
-    @staticmethod
-    def _validate(status):
-        if isinstance(status, str):
-            if not OrderStatusEnum.has_value(status):
-                raise ValueError(f'OrderStatus named "{status}" not exists')
-            value = status
-        elif isinstance(status, OrderStatusEnum):
-            value = status.value
-        elif isinstance(status, OrderStatus):
-            value = status._value
-        else:
-            raise TypeError(f'Expect value of type (str, OrderStatus), got {type(status)}')
+    @classmethod
+    def _validate(cls, status):
+        if isinstance(status, OrderStatusEnum):
+            status = status.value
+        value = super()._validate(status)
+
+        if not OrderStatusEnum.has_value(value):
+            raise ValueError(f'OrderStatus named "{value}" not exists')
 
         return value
+
+    if TYPE_CHECKING:
+        def __init__(self, status: Union[str, 'OrderStatus']):
+            super().__init__(...)

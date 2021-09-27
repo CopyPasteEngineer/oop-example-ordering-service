@@ -24,7 +24,10 @@ def domain_registry():
 def build_dummy_order(status='waiting'):
     order_id = OrderId('ooo')
     buyer_id = BuyerId('bbb')
-    lines = OrderLineList([OrderLine(ProductId('ppp1'), OrderAmount(2)), OrderLine(ProductId('ppp2'), OrderAmount(8))])
+    lines = OrderLineList([
+        OrderLine(product_id=ProductId('ppp1'), amount=OrderAmount(2)),
+        OrderLine(product_id=ProductId('ppp2'), amount=OrderAmount(8)),
+    ])
     product_cost = PriceThb(123.1)
     delivery_cost = PriceThb(456.2)
     payment_id = PaymentId('qqq')

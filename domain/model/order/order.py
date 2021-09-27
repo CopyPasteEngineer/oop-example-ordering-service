@@ -75,8 +75,8 @@ class Order(Entity):
         self._version += 1
 
     if TYPE_CHECKING:
-        def __init__(self, order_id: OrderId, buyer_id: BuyerId, lines: OrderLineList,
-                     product_cost: PriceThb, delivery_cost: PriceThb, payment_id: PaymentId, *,
+        def __init__(self, *, order_id: OrderId, buyer_id: BuyerId, lines: OrderLineList,
+                     product_cost: PriceThb, delivery_cost: PriceThb, payment_id: PaymentId,
                      status: OrderStatus = OrderStatus.Enum.WAITING, version: int = 0):
             super().__init__()
 

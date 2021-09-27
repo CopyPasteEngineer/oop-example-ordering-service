@@ -1,26 +1,20 @@
-from typing import Union
+from typing import Union, TYPE_CHECKING
 
 from domain.model.base import PrimitiveValueObject
 
 
-class PriceThb(PrimitiveValueObject[float]):
-    def __init__(self, price: Union[float, 'PriceThb']):
-        value: float = self._validate(price)
-        super().__init__(value)
+class PriceThb(PrimitiveValueObject):
+    value_type = float
 
-    @staticmethod
-    def _validate(price):
-        if isinstance(price, float):
-            value = price
-        elif isinstance(price, PriceThb):
-            value = price._value
-        else:
-            raise TypeError(f'Expect value of type (float, PriceTHB), got {type(price)}')
+    @classmethod
+    def _validate(cls, price):
+        price = super()._validate(price)
 
-        if value < 0:
-            raise ValueError(f'Expected PriceTHB >= 0, got {value}')
+        if price < 0:
+            raise ValueError(f'Expected PriceTHB >= 0, got {price}')
 
-        return value
+        return price
 
-    def __float__(self):
-        return float(self._value)
+    if TYPE_CHECKING:
+        def __init__(self, price: Union[float, 'PriceThb']):
+            super().__init__(...)

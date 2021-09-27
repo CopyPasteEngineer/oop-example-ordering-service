@@ -90,9 +90,6 @@ def deserialize_value(value):
 
 
 class Model(metaclass=ModelMeta):
-    _attrs: Dict[str, Attribute]
-    _values: Dict[str, Any]
-
     def __init__(self, **kwargs):
         values = set()
 

@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, TYPE_CHECKING
 from enum import Enum
 
 from domain.model.base import PrimitiveValueObject
@@ -19,29 +19,26 @@ class ProvinceEnum(str, Enum):
 
 
 class Province(PrimitiveValueObject[str]):
+    value_type = str
     Enum = ProvinceEnum
-
-    def __init__(self, province: Union[str, 'Province']):
-        value: str = self._validate(province)
-        super().__init__(value)
 
     def bangkok_and_surrounding(self) -> bool:
         return self._value in _bangkok_and_surrounding_provinces
 
-    @staticmethod
-    def _validate(province):
-        if isinstance(province, str):
-            if not ProvinceEnum.has_value(province):
-                raise ValueError(f'Province named "{province}" not exists')
-            value = province
-        elif isinstance(province, ProvinceEnum):
-            value = province.value
-        elif isinstance(province, Province):
-            value = province._value
-        else:
-            raise TypeError(f'Expect value of type (str, Province), got {type(province)}')
+    @classmethod
+    def _validate(cls, value):
+        if isinstance(value, ProvinceEnum):
+            value = value.value
+        value = super()._validate(value)
+
+        if not ProvinceEnum.has_value(value):
+            raise ValueError(f'Province named "{value}" not exists')
 
         return value
+
+    if TYPE_CHECKING:
+        def __init__(self, value: Union[str, 'Province']):
+            super().__init__(...)
 
 
 _bangkok_and_surrounding_provinces = {
