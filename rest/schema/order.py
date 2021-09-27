@@ -1,4 +1,6 @@
+import uuid
 from typing import List
+from enum import Enum
 from bson import ObjectId
 from pydantic import BaseModel
 
@@ -66,6 +68,25 @@ class OrderCreateResponse(BaseModel):
             }
         }
 
+
+class OrderStatus(str, Enum):
+    waiting: str = 'waiting'
+    paid: str = 'paid'
+    cancelled: str = 'cancelled'
+
+
+class OrderUpdateStatusResponse(BaseModel):
+    order_id: str
+    status: OrderStatus
+
+    class Config:
+        schema_extra = {
+            'example': {
+                'order_id': str(ObjectId()),
+                'status': 'paid',
+            }
+        }
+
     @classmethod
     def from_order_id(cls, order_id: OrderId):
         return cls(order_id=str(order_id))
@@ -79,16 +100,18 @@ class OrderDetail(BaseModel):
     product_cost: float
     delivery_cost: float
     total_cost: float
+    status: OrderStatus
 
     class Config:
         schema_extra = {
             'example': {
                 'buyer_id': str(ObjectId()),
-                'payment_id': str(ObjectId()),
+                'payment_id': str(uuid.uuid4()),
                 'lines': [OrderLine.schema()['example']],
                 'product_cost': 424.2,
                 'delivery_cost': 42.42,
                 'total_cost': 466.62,
+                'status': 'waiting',
             }
         }
 

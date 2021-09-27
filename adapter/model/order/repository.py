@@ -20,6 +20,7 @@ class MongoDBOrderRepository(OrderRepositoryAbstract):
 
     async def from_id(self, id_: OrderId) -> Order:
         raw = await self.db[self.collection_name].find_one({'_id': ObjectId(str(id_))})
+        del raw['_id']
         return Order.deserialize(raw)
 
     async def save(self, entity: Order):
