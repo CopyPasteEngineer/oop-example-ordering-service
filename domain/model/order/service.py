@@ -1,5 +1,5 @@
 from domain.model.registry import DomainRegistry
-from domain.model.base import optimistic_lock
+from domain.model.base import transaction
 
 from domain.model.maps import Address
 
@@ -34,6 +34,6 @@ class OrderService:
 
         return order.order_id
 
-    @optimistic_lock
+    @transaction
     async def _save_new_order(self, order: Order):
         return await self.registry.order_repository.save(order)

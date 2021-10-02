@@ -4,4 +4,4 @@ from .str_id import StrIdValueObject
 from .value_object import ValueObject
 from .value_object_list import ValueObjectList
 from .entity import Entity
-from .repository import RepositoryAbstract, EntityNotFound, EntityOutdated, optimistic_lock
+from .repository import RepositoryAbstract, EntityNotFound, EntityOutdated, transaction

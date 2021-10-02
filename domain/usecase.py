@@ -1,4 +1,4 @@
-from domain.model.base import optimistic_lock
+from domain.model.base import transaction
 from domain.model.order import BuyerId, OrderLineList, OrderId, Order
 from domain.model.maps import Address
 from domain.model.registry import DomainRegistry
@@ -19,7 +19,7 @@ async def pay_order(order_id: OrderId):
     await _pay_order_tnx(order_id, is_payment_verified)
 
 
-@optimistic_lock
+@transaction
 async def cancel_order(order_id: OrderId):
     repo = DomainRegistry().order_repository
 
@@ -33,7 +33,7 @@ async def get_order_from_id(order_id: OrderId) -> Order:
     return order
 
 
-@optimistic_lock
+@transaction
 async def _pay_order_tnx(order_id, is_payment_verified):
     repo = DomainRegistry().order_repository
     order = await repo.from_id(order_id)

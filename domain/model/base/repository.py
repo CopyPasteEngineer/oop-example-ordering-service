@@ -33,7 +33,7 @@ class RepositoryAbstract(Generic[IdType, EntityType]):
         pass
 
 
-def optimistic_lock(func):
+def transaction(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
         while True:
