@@ -51,6 +51,9 @@ class DummyPaymentService(PaymentServiceAbstract):
     async def new_payment(self, total_price: PriceThb) -> PaymentId:
         return self._new_payment
 
+    async def verify_payment(self, payment_id: PaymentId) -> bool:
+        return False
+
 
 class DummyDeliveryCostCalculator(DeliveryCostCalculator):
     def __init__(self, delivery_cost):

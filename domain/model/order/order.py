@@ -22,6 +22,10 @@ class OrderAlreadyPaidException(Exception):
     pass
 
 
+class PaymentNotVerifiedException(Exception):
+    pass
+
+
 class Order(Entity):
     order_id: OrderId = Attribute()
     buyer_id: BuyerId = Attribute()
@@ -32,11 +36,13 @@ class Order(Entity):
     status: OrderStatus = Attribute(default=OrderStatus.Enum.WAITING)
     version: int = Attribute(default=0)
 
-    def pay(self):
+    def pay(self, is_payment_verified: bool):
         if self.is_cancelled():
             raise OrderAlreadyCancelledException('Order\'s already cancelled')
         if self.is_paid():
             raise OrderAlreadyPaidException('Order\'s already paid')
+        if not is_payment_verified:
+            raise PaymentNotVerifiedException(f'Payment {self.payment_id} must be verified')
 
         self._status = OrderStatus(OrderStatus.Enum.PAID)
 

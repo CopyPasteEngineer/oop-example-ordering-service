@@ -1,7 +1,7 @@
 import pytest
 from domain.model.order import (
     Order, OrderId, BuyerId, OrderLineList, OrderStatus, OrderLine, OrderAmount,
-    OrderAlreadyCancelledException, OrderAlreadyPaidException,
+    OrderAlreadyCancelledException, OrderAlreadyPaidException, PaymentNotVerifiedException,
 )
 from domain.model.order.event import OrderPaid, OrderCancelled
 from domain.model.product import PriceThb, ProductId
@@ -97,12 +97,20 @@ def test_is_paid():
     assert order.is_paid()
 
 
-def test_pay_when_waiting(domain_registry, event_publisher):
+def test_pay_not_verified():
+    order = build_dummy_order(status='waiting')
+
+    with pytest.raises(PaymentNotVerifiedException):
+        order.pay(is_payment_verified=False)
+    assert order.is_waiting()
+
+
+def test_pay_after_waiting(domain_registry, event_publisher):
     domain_registry.event_publisher = event_publisher
 
     order = build_dummy_order(status='waiting')
 
-    order.pay()
+    order.pay(is_payment_verified=True)
     assert order.is_paid()
 
     expected_event = OrderPaid(order_id=order.order_id, buyer_id=order.buyer_id, lines=order.lines,
@@ -111,21 +119,21 @@ def test_pay_when_waiting(domain_registry, event_publisher):
     assert len(event_publisher.events) == 1 and event_publisher.events[0] == expected_event
 
 
-def test_pay_when_cancelled():
+def test_pay_after_cancelled():
     order = build_dummy_order(status='cancelled')
 
     assert order.is_cancelled()
 
     with pytest.raises(OrderAlreadyCancelledException):
-        order.pay()
+        order.pay(is_payment_verified=True)
     assert order.is_cancelled()
 
 
-def test_pay_when_paid():
+def test_pay_after_paid():
     order = build_dummy_order(status='paid')
 
     assert order.is_paid()
 
     with pytest.raises(OrderAlreadyPaidException):
-        order.pay()
+        order.pay(is_payment_verified=True)
     assert order.is_paid()

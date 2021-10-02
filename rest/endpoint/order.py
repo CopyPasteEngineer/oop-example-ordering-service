@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 
 from domain.model.order import (
     BuyerId, OrderLineList as DomainOrderLineList, OrderId, OrderAlreadyPaidException, OrderAlreadyCancelledException,
+    PaymentNotVerifiedException
 )
 from domain.model.maps import Address as DomainAddress
 from domain import usecase
@@ -60,6 +61,9 @@ async def _pay_order(order_id: OrderId):
     except OrderAlreadyPaidException:
         error_detail = f'Cannot pay for Order when it\'s already paid'
         raise HTTPException(status_code=409, detail=error_detail)
+    except PaymentNotVerifiedException:
+        error_detail = f'Payment verification failed'
+        raise HTTPException(status_code=403, detail=error_detail)
 
 
 async def _cancel_order(order_id: OrderId):
